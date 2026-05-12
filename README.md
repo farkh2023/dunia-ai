@@ -148,6 +148,12 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Mode desktop Tauri.
 - Chiffrement local de la memoire.
 
+## Roadmap v0.2.0
+
+La prochaine version vise à transformer Dunia AI en assistant IA personnel avancé avec mémoire intelligente, automatisation, agents spécialisés, IA locale améliorée, multimodalité et organisation personnelle.
+
+Voir la roadmap détaillée dans [ROADMAP.md](./ROADMAP.md).
+
 ## Contribution
 
 Les contributions doivent conserver TypeScript strict, validation Zod, tests Vitest et architecture modulaire. Ajouter un agent implique un fichier dedie dans `agents/` et une entree dans le registre.
