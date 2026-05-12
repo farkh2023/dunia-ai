@@ -8,6 +8,12 @@
 
 Dunia AI est un assistant IA personnel multi-agents, local-first et extensible. Il centralise discussion, memoire, synthese documentaire, plans d'action, ideation, exports et automatisations dans une application moderne compatible Windows 11.
 
+## Version actuelle
+
+Version stable : `v0.1.0`
+
+Voir lhistorique dans [CHANGELOG.md](./CHANGELOG.md).
+
 ## Fonctionnalites
 
 - Chat moderne inspire ChatGPT, Claude et Perplexity.
