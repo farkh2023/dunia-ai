@@ -4,7 +4,7 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ArrowLeft, Bot, Clock, Database, Files, History, Server } from "lucide-react";
+import { ArrowLeft, Bot, Clock, Database, Files, History, Server, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -79,6 +79,12 @@ export default function DashboardPage() {
             <Link href="/documents">
               <Files className="mr-2 h-4 w-4" />
               Documents
+            </Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/workflows">
+              <Workflow className="mr-2 h-4 w-4" />
+              Workflows
             </Link>
           </Button>
         </header>
