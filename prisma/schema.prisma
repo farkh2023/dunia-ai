@@ -93,6 +93,37 @@ model DocumentChunk {
   @@index([chunkIndex])
 }
 
+model Workflow {
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  status      String         @default("draft")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  steps       WorkflowStep[]
+
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model WorkflowStep {
+  id         String   @id @default(cuid())
+  workflowId String
+  agentId    String
+  order      Int
+  title      String
+  input      String
+  output     String?
+  status     String   @default("draft")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@index([order])
+  @@index([status])
+}
+
 model AutomationRun {
   id        String   @id @default(cuid())
   type      String

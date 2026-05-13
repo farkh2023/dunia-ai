@@ -11,6 +11,13 @@
 - Injection memoire + documents dans le chat.
 - Tests etendus a 20 tests.
 
+## v0.3.0-dev - Orchestration multi-agents
+
+### Ajoute
+- Orchestration multi-agents et workflows automatises.
+- Templates de workflows sequentiels.
+- Interface `/workflows`.
+
 ## v0.1.0 - Initial stable release
 
 ### Ajoute

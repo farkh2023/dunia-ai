@@ -41,6 +41,7 @@ Agents à ajouter :
 
 Fonctions prévues :
 
+- orchestration multi-agents et workflows automatisés ;
 - orchestration multi-agents ;
 - collaboration entre agents ;
 - validation croisée des réponses.
@@ -149,6 +150,7 @@ Métriques à créer :
 - orchestration autonome ;
 - agents collaboratifs ;
 - workflows visuels.
+- base de workflows automatises disponible sur la branche `v0.3.0-dev`.
 
 ### v0.4.0
 

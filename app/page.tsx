@@ -19,7 +19,8 @@ import {
   Sun,
   Volume2,
   Wifi,
-  WifiOff
+  WifiOff,
+  Workflow
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -214,6 +215,12 @@ export default function HomePage() {
             <Link href="/documents">
               <Files className="mr-2 h-4 w-4" />
               Documents
+            </Link>
+          </Button>
+          <Button asChild className="w-full justify-start" variant="ghost">
+            <Link href="/workflows">
+              <Workflow className="mr-2 h-4 w-4" />
+              Workflows
             </Link>
           </Button>
           <div className="flex items-center gap-2 text-sm">

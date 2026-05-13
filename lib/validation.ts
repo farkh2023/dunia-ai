@@ -53,3 +53,27 @@ export const documentUploadSchema = z.object({
   size: z.number().int().min(1).max(8 * 1024 * 1024),
   type: z.string().max(120)
 });
+
+export const workflowStepSchema = z.object({
+  agentId: z.string().min(1).max(80),
+  title: z.string().min(1).max(160),
+  input: z.string().max(30000).optional()
+});
+
+export const workflowCreateSchema = z.object({
+  title: z.string().min(1).max(180),
+  description: z.string().max(1000).optional(),
+  context: z.string().min(1).max(30000),
+  steps: z.array(workflowStepSchema).min(1).max(8)
+});
+
+export const workflowRunSchema = z.object({
+  workflowId: z.string().min(1),
+  provider: z.enum(["auto", "ollama", "openai", "anthropic", "mistral", "local"]).default("local"),
+  model: z.string().optional()
+});
+
+export const workflowTemplateCreateSchema = z.object({
+  templateId: z.string().min(1),
+  context: z.string().min(1).max(30000)
+});
