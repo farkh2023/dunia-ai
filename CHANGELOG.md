@@ -1,10 +1,15 @@
 # Changelog
 
-## v0.2.0 - En cours
+## v0.2.0 - Mémoire intelligente et documents
 
 ### Ajoute
+- RAG local.
 - Interface de gestion memoire locale `/memory`.
-- Base documentaire intelligente locale avec import PDF, Markdown et TXT via `/documents`.
+- Indexation PDF / Markdown / TXT.
+- Page `/documents`.
+- Recherche documentaire hybride.
+- Injection memoire + documents dans le chat.
+- Tests etendus a 20 tests.
 
 ## v0.1.0 - Initial stable release
 
