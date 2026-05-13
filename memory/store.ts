@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { estimateTokens, makeConversationTitle, safeJsonArray } from "@/lib/utils";
 import type { AiMessage } from "@/lib/ai";
+import { chunkText } from "@/memory/chunker";
+import { embedText, serializeEmbedding } from "@/memory/embeddings";
 
 export async function listConversations() {
   const rows = await prisma.conversation.findMany({
@@ -72,6 +74,32 @@ export async function saveAssistantMessage(input: {
   ]);
 }
 
+export async function rememberConversationTurn(input: {
+  conversationId: string;
+  userContent: string;
+  assistantContent: string;
+  agentId: string;
+}) {
+  const combined = [
+    `Utilisateur: ${input.userContent}`,
+    "",
+    `Assistant: ${input.assistantContent}`
+  ].join("\n");
+
+  if (!shouldRemember(input.userContent, input.assistantContent)) {
+    return null;
+  }
+
+  return createMemoryItem({
+    title: makeConversationTitle(input.userContent),
+    content: combined,
+    source: `conversation:${input.conversationId}`,
+    tags: ["conversation", input.agentId],
+    importance: input.userContent.length > 500 ? 4 : 3,
+    type: "conversation"
+  });
+}
+
 export async function getRecentMessages(conversationId: string, take = 12): Promise<AiMessage[]> {
   const messages = await prisma.message.findMany({
     where: { conversationId },
@@ -98,11 +126,43 @@ export async function searchMemory(query?: string, tag?: string) {
         }
       : {},
     orderBy: { updatedAt: "desc" },
+    include: { chunks: { orderBy: { index: "asc" } } },
     take: 50
   });
   return rows
     .map((row) => ({ ...row, tags: safeJsonArray(row.tags) }))
     .filter((row) => (tag ? row.tags.includes(tag) : true));
+}
+
+export async function createMemoryItem(input: {
+  title: string;
+  content: string;
+  source?: string;
+  tags?: string[];
+  importance?: number;
+  type?: string;
+}) {
+  const chunks = chunkText(input.content);
+  const memoryItem = await prisma.memoryItem.create({
+    data: {
+      type: input.type ?? "note",
+      title: input.title,
+      content: input.content,
+      source: input.source,
+      tags: JSON.stringify(input.tags ?? []),
+      importance: input.importance ?? 3,
+      chunks: {
+        create: chunks.map((chunk) => ({
+          content: chunk.content,
+          index: chunk.index,
+          embedding: serializeEmbedding(embedText(chunk.content))
+        }))
+      }
+    },
+    include: { chunks: { orderBy: { index: "asc" } } }
+  });
+
+  return { ...memoryItem, tags: safeJsonArray(memoryItem.tags) };
 }
 
 export async function deleteMemoryItem(id: string) {
@@ -115,7 +175,10 @@ export async function exportMemory() {
       include: { messages: { orderBy: { createdAt: "asc" } } },
       orderBy: { updatedAt: "desc" }
     }),
-    prisma.memoryItem.findMany({ orderBy: { updatedAt: "desc" } })
+    prisma.memoryItem.findMany({
+      orderBy: { updatedAt: "desc" },
+      include: { chunks: { orderBy: { index: "asc" } } }
+    })
   ]);
 
   return {
@@ -123,6 +186,17 @@ export async function exportMemory() {
     conversations,
     memoryItems: memoryItems.map((item) => ({ ...item, tags: safeJsonArray(item.tags) }))
   };
+}
+
+function shouldRemember(userContent: string, assistantContent: string): boolean {
+  const lower = `${userContent}\n${assistantContent}`.toLowerCase();
+  return (
+    userContent.length >= 240 ||
+    lower.includes("souviens") ||
+    lower.includes("memorise") ||
+    lower.includes("mémorise") ||
+    lower.includes("important")
+  );
 }
 
 export async function memoryStats() {

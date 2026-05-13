@@ -43,11 +43,27 @@ model MemoryItem {
   source    String?
   tags      String   @default("[]")
   favorite  Boolean  @default(false)
+  importance Int     @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  chunks    MemoryChunk[]
 
   @@index([type])
+  @@index([importance])
   @@index([updatedAt])
+}
+
+model MemoryChunk {
+  id           String     @id @default(cuid())
+  memoryItemId String
+  content      String
+  index        Int
+  embedding    String
+  createdAt    DateTime   @default(now())
+  memoryItem   MemoryItem @relation(fields: [memoryItemId], references: [id], onDelete: Cascade)
+
+  @@index([memoryItemId])
+  @@index([index])
 }
 
 model AutomationRun {

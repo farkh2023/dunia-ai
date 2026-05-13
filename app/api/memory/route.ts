@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { memorySearchSchema } from "@/lib/validation";
-import { deleteMemoryItem, searchMemory } from "@/memory/store";
+import { memoryCreateSchema, memorySearchSchema } from "@/lib/validation";
+import { createMemoryItem, deleteMemoryItem, searchMemory } from "@/memory/store";
 
 export const runtime = "nodejs";
 
@@ -13,6 +13,12 @@ export async function GET(request: Request) {
   });
   const memory = await searchMemory(payload.q, payload.tag);
   return NextResponse.json({ memory });
+}
+
+export async function POST(request: Request) {
+  const payload = memoryCreateSchema.parse(await request.json());
+  const memory = await createMemoryItem(payload);
+  return NextResponse.json({ memory }, { status: 201 });
 }
 
 export async function DELETE(request: Request) {
