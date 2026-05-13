@@ -20,6 +20,7 @@ Voir lhistorique dans [CHANGELOG.md](./CHANGELOG.md).
 - 5 agents specialises: Analyste, Architecte, Automatisation, Redacteur, Coach IA.
 - Mode offline avec Ollama et fallback cloud OpenAI, Anthropic ou Mistral.
 - Memoire persistante SQLite via Prisma: conversations, messages, tags, favoris et recherche.
+- Interface de gestion memoire locale `/memory`.
 - Upload drag & drop de documents texte.
 - Exports Markdown, PDF et JSON avec date, agent, provider et modele.
 - Dashboard statistiques avec Recharts.
@@ -150,7 +151,7 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Roadmap v0.2.0
 
-La prochaine version vise à transformer Dunia AI en assistant IA personnel avancé avec mémoire intelligente, automatisation, agents spécialisés, IA locale améliorée, multimodalité et organisation personnelle.
+La prochaine version vise à transformer Dunia AI en assistant IA personnel avancé avec mémoire intelligente, automatisation, agents spécialisés, IA locale améliorée, multimodalité et organisation personnelle. L'interface de gestion memoire locale est disponible sur `/memory`.
 
 Voir la roadmap détaillée dans [ROADMAP.md](./ROADMAP.md).
 

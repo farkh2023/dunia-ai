@@ -3,6 +3,7 @@ import { estimateTokens, makeConversationTitle, safeJsonArray } from "@/lib/util
 import type { AiMessage } from "@/lib/ai";
 import { chunkText } from "@/memory/chunker";
 import { embedText, serializeEmbedding } from "@/memory/embeddings";
+import { searchRelevantMemory } from "@/memory/search";
 
 export async function listConversations() {
   const rows = await prisma.conversation.findMany({
@@ -119,12 +120,31 @@ function toAiRole(role: string): AiMessage["role"] {
 }
 
 export async function searchMemory(query?: string, tag?: string) {
+  if (query?.trim()) {
+    const relevantChunks = await searchRelevantMemory(query, { limit: 100, minScore: 0, tag });
+    const scores = new Map<string, number>();
+
+    for (const chunk of relevantChunks) {
+      scores.set(chunk.memoryItemId, Math.max(scores.get(chunk.memoryItemId) ?? 0, chunk.score));
+    }
+
+    if (!scores.size) {
+      return [];
+    }
+
+    const rows = await prisma.memoryItem.findMany({
+      where: { id: { in: [...scores.keys()] } },
+      include: { chunks: { orderBy: { index: "asc" } } }
+    });
+
+    return rows
+      .map((row) => ({ ...row, tags: safeJsonArray(row.tags), score: scores.get(row.id) ?? 0 }))
+      .filter((row) => (tag ? row.tags.includes(tag) : true))
+      .sort((left, right) => right.score - left.score);
+  }
+
   const rows = await prisma.memoryItem.findMany({
-    where: query
-      ? {
-          OR: [{ title: { contains: query } }, { content: { contains: query } }]
-        }
-      : {},
+    where: {},
     orderBy: { updatedAt: "desc" },
     include: { chunks: { orderBy: { index: "asc" } } },
     take: 50

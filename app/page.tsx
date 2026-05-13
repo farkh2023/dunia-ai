@@ -10,6 +10,7 @@ import {
   Download,
   FileText,
   LayoutDashboard,
+  Database,
   Mic,
   Moon,
   Plus,
@@ -91,6 +92,12 @@ export default function HomePage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (activeId) {
+      window.localStorage.setItem("dunia-active-conversation-id", activeId);
+    }
+  }, [activeId]);
 
   const onDrop = useCallback(
     async (files: File[]) => {
@@ -194,6 +201,12 @@ export default function HomePage() {
             <Link href="/dashboard">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               Dashboard
+            </Link>
+          </Button>
+          <Button asChild className="w-full justify-start" variant="ghost">
+            <Link href="/memory">
+              <Database className="mr-2 h-4 w-4" />
+              Memoire
             </Link>
           </Button>
           <div className="flex items-center gap-2 text-sm">

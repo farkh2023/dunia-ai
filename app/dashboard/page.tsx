@@ -69,6 +69,12 @@ export default function DashboardPage() {
               Retour chat
             </Link>
           </Button>
+          <Button asChild variant="secondary">
+            <Link href="/memory">
+              <Database className="mr-2 h-4 w-4" />
+              Memoire
+            </Link>
+          </Button>
         </header>
 
         <section className="grid gap-4 md:grid-cols-5">

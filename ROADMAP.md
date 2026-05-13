@@ -18,6 +18,7 @@ Fonctions prévues :
 
 - mémoire long terme ;
 - recherche conversationnelle ;
+- interface de gestion memoire locale `/memory` ;
 - tags intelligents ;
 - embeddings locaux ;
 - résumé automatique de l'historique.

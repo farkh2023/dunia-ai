@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.0 - En cours
+
+### Ajoute
+- Interface de gestion memoire locale `/memory`.
+
 ## v0.1.0 - Initial stable release
 
 ### Ajoute
