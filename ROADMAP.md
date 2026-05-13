@@ -86,6 +86,7 @@ Formats à supporter :
 
 Fonctions prévues :
 
+- base documentaire intelligente locale ;
 - résumé ;
 - extraction ;
 - OCR ;

@@ -7,6 +7,7 @@ import { useDropzone } from "react-dropzone";
 import {
   Brain,
   Copy,
+  Files,
   Download,
   FileText,
   LayoutDashboard,
@@ -207,6 +208,12 @@ export default function HomePage() {
             <Link href="/memory">
               <Database className="mr-2 h-4 w-4" />
               Memoire
+            </Link>
+          </Button>
+          <Button asChild className="w-full justify-start" variant="ghost">
+            <Link href="/documents">
+              <Files className="mr-2 h-4 w-4" />
+              Documents
             </Link>
           </Button>
           <div className="flex items-center gap-2 text-sm">

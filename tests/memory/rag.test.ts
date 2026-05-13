@@ -39,7 +39,7 @@ describe("local memory RAG", () => {
     ]);
 
     expect(message.role).toBe("system");
-    expect(message.content).toContain("Contexte memoire local");
+    expect(message.content).toContain("Contexte RAG local");
     expect(message.content).toContain("Projet Dunia");
     expect(message.content).toContain("Ollama");
   });

@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       content: userContent
     });
     const recentMessages = await getRecentMessages(conversationId);
-    const { messages, memories } = await withMemoryContext({
+    const { messages, memories, documents } = await withMemoryContext({
       query: userContent,
       messages: recentMessages,
       limit: 5
@@ -59,6 +59,11 @@ export async function POST(request: Request) {
         id: memory.memoryItemId,
         title: memory.title,
         score: memory.score
+      })),
+      documentContext: documents.map((document) => ({
+        id: document.documentId,
+        filename: document.filename,
+        score: document.score
       })),
       ...completion
     });

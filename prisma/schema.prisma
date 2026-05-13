@@ -66,6 +66,33 @@ model MemoryChunk {
   @@index([index])
 }
 
+model Document {
+  id        String          @id @default(cuid())
+  filename  String
+  type      String
+  size      Int
+  content   String
+  pages     Int?
+  createdAt DateTime        @default(now())
+  chunks    DocumentChunk[]
+
+  @@index([type])
+  @@index([createdAt])
+}
+
+model DocumentChunk {
+  id         String   @id @default(cuid())
+  documentId String
+  content    String
+  chunkIndex Int
+  embedding  String
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([chunkIndex])
+}
+
 model AutomationRun {
   id        String   @id @default(cuid())
   type      String

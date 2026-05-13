@@ -21,6 +21,7 @@ Voir lhistorique dans [CHANGELOG.md](./CHANGELOG.md).
 - Mode offline avec Ollama et fallback cloud OpenAI, Anthropic ou Mistral.
 - Memoire persistante SQLite via Prisma: conversations, messages, tags, favoris et recherche.
 - Interface de gestion memoire locale `/memory`.
+- Base documentaire intelligente locale avec import PDF, Markdown et TXT via `/documents`.
 - Upload drag & drop de documents texte.
 - Exports Markdown, PDF et JSON avec date, agent, provider et modele.
 - Dashboard statistiques avec Recharts.
@@ -144,6 +145,7 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 ## Roadmap
 
 - Embeddings locaux avec recherche semantique.
+- Base documentaire intelligente locale.
 - Connecteurs calendrier, fichiers et navigateur.
 - Automatisations planifiees avec interface dediee.
 - Mode desktop Tauri.

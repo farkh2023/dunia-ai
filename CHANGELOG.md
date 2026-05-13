@@ -4,6 +4,7 @@
 
 ### Ajoute
 - Interface de gestion memoire locale `/memory`.
+- Base documentaire intelligente locale avec import PDF, Markdown et TXT via `/documents`.
 
 ## v0.1.0 - Initial stable release
 

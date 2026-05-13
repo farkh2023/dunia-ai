@@ -38,3 +38,18 @@ export const memoryCreateSchema = z.object({
   tags: z.array(z.string().min(1).max(40)).default([]),
   importance: z.number().int().min(1).max(5).default(3)
 });
+
+export const documentSearchSchema = z.object({
+  q: z.string().min(1).max(500),
+  limit: z.coerce.number().int().min(1).max(20).default(8)
+});
+
+export const documentDeleteSchema = z.object({
+  id: z.string().min(1)
+});
+
+export const documentUploadSchema = z.object({
+  name: z.string().min(1).max(260),
+  size: z.number().int().min(1).max(8 * 1024 * 1024),
+  type: z.string().max(120)
+});
