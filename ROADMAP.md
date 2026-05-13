@@ -157,3 +157,10 @@ Métriques à créer :
 - assistant vocal temps réel ;
 - mémoire contextuelle globale ;
 - IA proactive.
+- agents parallèles ;
+- planification autonome ;
+- scheduler automatique ;
+- plugins/outils externes ;
+- n8n integration ;
+- mémoire vectorielle avancée ;
+- tableau de bord monitoring agents.

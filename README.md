@@ -10,7 +10,7 @@ Dunia AI est un assistant IA personnel multi-agents, local-first et extensible. 
 
 ## Version actuelle
 
-Version stable : `v0.2.0`
+Version stable : `v0.3.0`
 
 Voir lhistorique dans [CHANGELOG.md](./CHANGELOG.md).
 
@@ -28,6 +28,13 @@ Voir lhistorique dans [CHANGELOG.md](./CHANGELOG.md).
 - Dashboard statistiques avec Recharts.
 - Mode sombre, animations Framer Motion, notifications toast.
 - Bonus inclus: PWA, reconnaissance vocale, synthese vocale, architecture automation.
+
+## Nouveautés v0.3.0
+
+- Workflows automatisés.
+- Orchestration multi-agents.
+- Templates IA.
+- Pipeline agentique.
 
 ## Captures d'ecran
 
