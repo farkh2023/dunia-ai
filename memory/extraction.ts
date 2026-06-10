@@ -31,6 +31,8 @@ export async function extractAndStoreMemories(input: {
     "Réponds uniquement avec le JSON."
   ].join("\n");
 
+  let facts: ExtractedFact[] = [];
+
   try {
     const completion = await completeWithAgent({
       agentId: "analyste",
@@ -38,20 +40,98 @@ export async function extractAndStoreMemories(input: {
       messages: [{ role: "system", content: prompt }, { role: "user", content: "Extrais les faits marquants." }]
     });
 
-    const facts = parseFacts(completion.content);
-    
-    for (const fact of facts) {
-      await consolidateFact({
-        ...fact,
-        source: `conversation:${input.conversationId}`
-      });
-    }
-
-    return facts.length;
+    facts = parseFacts(completion.content);
   } catch (error) {
-    console.error("Failed to extract memories:", error);
-    return 0;
+    console.error("LLM extraction failed, using fallback:", error);
   }
+
+  // Fallback déterministe local si l'IA échoue ou ne renvoie rien
+  if (facts.length === 0) {
+    facts = localFactExtraction(input.userContent);
+  }
+  
+  for (const fact of facts) {
+    await consolidateFact({
+      ...fact,
+      source: `conversation:${input.conversationId}`
+    });
+  }
+
+  return facts.length;
+}
+
+/**
+ * Extraction déterministe basée sur des motifs (regex) pour garantir un fonctionnement local
+ * même sans LLM performant ou en cas d'erreur de parsing JSON.
+ */
+export function localFactExtraction(text: string): ExtractedFact[] {
+  const results: ExtractedFact[] = [];
+  
+  // On découpe par segments simples pour éviter qu'une règle ne "mange" tout le texte
+  const segments = text.split(/[.!?]|\bet\b/i).map(s => s.trim()).filter(s => s.length > 5);
+
+  const rules: Array<{ pattern: RegExp; title: string; tags: string[]; importance: number }> = [
+    {
+      pattern: /je m'appelle ([^,]+)/i,
+      title: "Identité",
+      tags: ["identité", "personnel"],
+      importance: 5
+    },
+    {
+      pattern: /je travaille sur ([^,]+)/i,
+      title: "Projet actuel",
+      tags: ["projet"],
+      importance: 4
+    },
+    {
+      pattern: /je préfère ([^,]+)/i,
+      title: "Préférence",
+      tags: ["préférence"],
+      importance: 3
+    },
+    {
+      pattern: /je veux éviter ([^,]+)/i,
+      title: "Contrainte / Évitement",
+      tags: ["préférence", "contrainte"],
+      importance: 3
+    },
+    {
+      pattern: /ma priorité est ([^,]+)/i,
+      title: "Priorité",
+      tags: ["priorité"],
+      importance: 5
+    },
+    {
+      pattern: /mémorise que (.+)/i,
+      title: "Note importante",
+      tags: ["manuel", "important"],
+      importance: 4
+    },
+    {
+      pattern: /c'est important : (.+)/i,
+      title: "Note importante",
+      tags: ["manuel", "important"],
+      importance: 4
+    }
+  ];
+
+  for (const segment of segments) {
+    for (const rule of rules) {
+      const match = segment.match(rule.pattern);
+      if (match && match[1]) {
+        results.push({
+          title: rule.title,
+          content: match[1].trim(),
+          tags: rule.tags,
+          importance: rule.importance
+        });
+        // Si un segment correspond à une règle, on passe au segment suivant
+        break;
+      }
+    }
+  }
+
+  return results;
 }
 
 function parseFacts(content: string): ExtractedFact[] {
