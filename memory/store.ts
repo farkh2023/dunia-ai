@@ -125,6 +125,11 @@ function toAiRole(role: string): AiMessage["role"] {
 }
 
 export async function searchMemory(query?: string, tag?: string) {
+  const where: { tags?: { contains: string } } = {};
+  if (tag) {
+    where.tags = { contains: tag };
+  }
+
   if (query?.trim()) {
     const relevantChunks = await searchRelevantMemory(query, { limit: 100, minScore: 0, tag });
     const scores = new Map<string, number>();
@@ -138,7 +143,9 @@ export async function searchMemory(query?: string, tag?: string) {
     }
 
     const rows = await prisma.memoryItem.findMany({
-      where: { id: { in: [...scores.keys()] } },
+      where: { 
+        id: { in: [...scores.keys()] }
+      },
       include: { chunks: { orderBy: { index: "asc" } } }
     });
 
@@ -149,7 +156,7 @@ export async function searchMemory(query?: string, tag?: string) {
   }
 
   const rows = await prisma.memoryItem.findMany({
-    where: {},
+    where,
     orderBy: { updatedAt: "desc" },
     include: { chunks: { orderBy: { index: "asc" } } },
     take: 50
@@ -188,6 +195,62 @@ export async function createMemoryItem(input: {
   });
 
   return { ...memoryItem, tags: safeJsonArray(memoryItem.tags) };
+}
+
+export async function updateMemoryItem(id: string, data: {
+  title?: string;
+  content?: string;
+  tags?: string[];
+  importance?: number;
+}) {
+  const existing = await prisma.memoryItem.findUnique({
+    where: { id },
+    include: { chunks: true }
+  });
+
+  if (!existing) {
+    throw new Error(`Memory item ${id} not found`);
+  }
+
+  const updatedContent = data.content ?? existing.content;
+  const shouldRegenerateChunks = data.content !== undefined;
+
+  return await prisma.$transaction(async (tx) => {
+    if (shouldRegenerateChunks) {
+      await tx.memoryChunk.deleteMany({
+        where: { memoryItemId: id }
+      });
+
+      const newChunks = chunkText(updatedContent);
+      for (const chunk of newChunks) {
+        await tx.memoryChunk.create({
+          data: {
+            memoryItemId: id,
+            content: chunk.content,
+            index: chunk.index,
+            embedding: serializeEmbedding(embedText(chunk.content))
+          }
+        });
+      }
+    }
+
+    const updated = await tx.memoryItem.update({
+      where: { id },
+      data: {
+        title: data.title,
+        content: data.content,
+        tags: data.tags ? JSON.stringify(data.tags) : undefined,
+        importance: data.importance,
+      }
+    });
+    return { ...updated, tags: safeJsonArray(updated.tags) };
+  });
+}
+
+export async function archiveMemoryItem(id: string) {
+  // no-op car le champ status n'est plus présent dans le schéma
+  console.log(`archiveMemoryItem no-op for ${id}`);
+  return null;
 }
 
 export async function deleteMemoryItem(id: string) {

@@ -1,5 +1,5 @@
 import { completeWithAgent } from "@/lib/ai";
-import { createMemoryItem } from "@/memory/store";
+import { consolidateFact } from "@/memory/fusion";
 
 export type ExtractedFact = {
   title: string;
@@ -33,7 +33,7 @@ export async function extractAndStoreMemories(input: {
 
   try {
     const completion = await completeWithAgent({
-      agentId: "analyste", // Using 'analyste' agent if it exists
+      agentId: "analyste",
       provider: "auto",
       messages: [{ role: "system", content: prompt }, { role: "user", content: "Extrais les faits marquants." }]
     });
@@ -41,10 +41,9 @@ export async function extractAndStoreMemories(input: {
     const facts = parseFacts(completion.content);
     
     for (const fact of facts) {
-      await createMemoryItem({
+      await consolidateFact({
         ...fact,
-        source: `conversation:${input.conversationId}`,
-        type: "fact"
+        source: `conversation:${input.conversationId}`
       });
     }
 
