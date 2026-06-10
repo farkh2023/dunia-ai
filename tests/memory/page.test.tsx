@@ -32,10 +32,10 @@ describe("memory page", () => {
 
     render(<MemoryPage />);
 
-    expect(screen.getByText("Memoire Dunia AI")).toBeInTheDocument();
+    expect(screen.getByText("Mémoire Dunia AI")).toBeInTheDocument();
     expect(screen.getByText("Chargement de la memoire locale...")).toBeInTheDocument();
     expect(await screen.findByText("Preference locale")).toBeInTheDocument();
-    expect(screen.getByText("1 chunk(s)")).toBeInTheDocument();
+    expect(screen.getByText("1 fragments")).toBeInTheDocument();
   });
 
   it("validates the manual memory form", () => {
