@@ -1,4 +1,4 @@
-const VECTOR_SIZE = 128;
+const VECTOR_SIZE = 384;
 
 export type EmbeddingVector = number[];
 
@@ -7,12 +7,26 @@ export function embedText(text: string): EmbeddingVector {
   const tokens = tokenize(text);
 
   for (const token of tokens) {
-    const hash = hashToken(token);
-    const index = Math.abs(hash) % VECTOR_SIZE;
-    vector[index] += hash >= 0 ? 1 : -1;
+    const hashes = multiHash(token, 3);
+    for (const hash of hashes) {
+      const index = Math.abs(hash) % VECTOR_SIZE;
+      vector[index] += hash >= 0 ? 1 : -1;
+    }
   }
 
   return normalizeVector(vector);
+}
+
+function multiHash(token: string, count: number): number[] {
+  const result: number[] = [];
+  let h = 0x811c9dc5;
+  for (let i = 0; i < count; i++) {
+    for (let j = 0; j < token.length; j++) {
+      h = Math.imul(h ^ token.charCodeAt(j), 0x01000193 + i);
+    }
+    result.push(h | 0);
+  }
+  return result;
 }
 
 export function serializeEmbedding(vector: EmbeddingVector): string {
@@ -60,17 +74,6 @@ function tokenize(text: string): string[] {
     .replace(/[\u0300-\u036f]/g, "")
     .split(/[^a-z0-9]+/)
     .filter((token) => token.length > 2);
-}
-
-function hashToken(token: string): number {
-  let hash = 0x811c9dc5;
-
-  for (let index = 0; index < token.length; index += 1) {
-    hash ^= token.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193);
-  }
-
-  return hash | 0;
 }
 
 function normalizeVector(vector: EmbeddingVector): EmbeddingVector {

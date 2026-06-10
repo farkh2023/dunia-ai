@@ -28,6 +28,7 @@ type MemoryChunk = {
 
 type MemoryItem = {
   id: string;
+  type: string;
   title: string;
   content: string;
   source: string | null;
@@ -371,11 +372,21 @@ function MemoryCard({
   showScore: boolean;
   onDelete: (id: string) => Promise<void>;
 }) {
+  const typeLabel = item.type === "fact" ? "✨ Fait" : item.type === "conversation" ? "💬 Chat" : "📝 Note";
+  const typeColor = item.type === "fact" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" : 
+                    item.type === "conversation" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" :
+                    "bg-muted text-muted-foreground";
+
   return (
     <Card className="p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="truncate text-lg font-semibold">{item.title}</h2>
+          <div className="flex items-center gap-2">
+            <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${typeColor}`}>
+              {typeLabel}
+            </span>
+            <h2 className="truncate text-lg font-semibold">{item.title}</h2>
+          </div>
           <p className="mt-1 text-xs text-muted-foreground">
             {item.source ?? "memoire locale"} / {formatDate(item.createdAt)}
           </p>

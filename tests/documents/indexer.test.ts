@@ -32,6 +32,6 @@ describe("document indexer", () => {
     expect(payload.data.filename).toBe("notes.txt");
     expect(payload.data.chunks.create.length).toBeGreaterThan(1);
     expect(payload.data.chunks.create.length).toBeLessThanOrEqual(MAX_DOCUMENT_CHUNKS);
-    expect(JSON.parse(payload.data.chunks.create[0].embedding)).toHaveLength(128);
+    expect(JSON.parse(payload.data.chunks.create[0].embedding)).toHaveLength(384);
   });
 });

@@ -4,6 +4,7 @@ import type { AiMessage } from "@/lib/ai";
 import { chunkText } from "@/memory/chunker";
 import { embedText, serializeEmbedding } from "@/memory/embeddings";
 import { searchRelevantMemory } from "@/memory/search";
+import { extractAndStoreMemories } from "@/memory/extraction";
 
 export async function listConversations() {
   const rows = await prisma.conversation.findMany({
@@ -87,18 +88,22 @@ export async function rememberConversationTurn(input: {
     `Assistant: ${input.assistantContent}`
   ].join("\n");
 
-  if (!shouldRemember(input.userContent, input.assistantContent)) {
-    return null;
+  // On essaie d'extraire des faits sémantiques si possible
+  const factCount = await extractAndStoreMemories(input);
+  
+  // Si aucun fait n'a été extrait mais que c'est important, on garde le tour complet
+  if (factCount === 0 && shouldRemember(input.userContent, input.assistantContent)) {
+    return createMemoryItem({
+      title: makeConversationTitle(input.userContent),
+      content: combined,
+      source: `conversation:${input.conversationId}`,
+      tags: ["conversation", input.agentId],
+      importance: input.userContent.length > 500 ? 4 : 3,
+      type: "conversation"
+    });
   }
 
-  return createMemoryItem({
-    title: makeConversationTitle(input.userContent),
-    content: combined,
-    source: `conversation:${input.conversationId}`,
-    tags: ["conversation", input.agentId],
-    importance: input.userContent.length > 500 ? 4 : 3,
-    type: "conversation"
-  });
+  return null;
 }
 
 export async function getRecentMessages(conversationId: string, take = 12): Promise<AiMessage[]> {
