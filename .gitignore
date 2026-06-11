@@ -7,3 +7,4 @@ coverage
 *.db-journal
 prisma/dev.db
 exports/generated
+.aider*
