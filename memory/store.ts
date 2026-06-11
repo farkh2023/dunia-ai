@@ -174,6 +174,7 @@ export async function createMemoryItem(input: {
   importance?: number;
   type?: string;
 }) {
+  console.log(`[Memory] createMemoryItem: "${input.title}" (type: ${input.type ?? "note"})`);
   const chunks = chunkText(input.content);
   const memoryItem = await prisma.memoryItem.create({
     data: {
@@ -202,7 +203,9 @@ export async function updateMemoryItem(id: string, data: {
   content?: string;
   tags?: string[];
   importance?: number;
+  type?: string;
 }) {
+  console.log(`[Memory] updateMemoryItem: ${id} (type: ${data.type ?? "unchanged"})`);
   const existing = await prisma.memoryItem.findUnique({
     where: { id },
     include: { chunks: true }
@@ -241,6 +244,7 @@ export async function updateMemoryItem(id: string, data: {
         content: data.content,
         tags: data.tags ? JSON.stringify(data.tags) : undefined,
         importance: data.importance,
+        type: data.type,
       }
     });
     return { ...updated, tags: safeJsonArray(updated.tags) };

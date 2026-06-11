@@ -208,7 +208,8 @@ export default function MemoryPage() {
           content,
           source: `conversation:${data.conversation.id}`,
           tags: ["conversation", data.conversation.agentId],
-          importance: 4
+          importance: 4,
+          type: "conversation"
         })
       });
       const createData = (await createResponse.json()) as { error?: string };

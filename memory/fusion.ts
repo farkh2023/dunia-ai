@@ -25,11 +25,14 @@ export async function consolidateFact(newFact: {
   const similar = await searchRelevantMemory(`${newFact.title} ${newFact.content}`, { limit: 1 });
   
   if (similar.length === 0) {
+    console.log(`[Memory] No similar facts found, creating new item: "${newFact.title}" (type: fact)`);
     return await createMemoryItem({ ...newFact, type: "fact" });
   }
 
   const existing = similar[0];
+  console.log(`[Memory] Found similar item (score: ${existing.score}): "${existing.title}"`);
   const decision = await assessFusion(newFact, existing);
+  console.log(`[Memory] Fusion decision for "${newFact.title}": ${decision.action}`);
 
   switch (decision.action) {
     case "IGNORE":
@@ -37,27 +40,28 @@ export async function consolidateFact(newFact: {
     
     case "MERGE":
       if (decision.content) {
-        // Au lieu d'archiver, on met à jour l'item existant pour éviter les doublons
         return await updateMemoryItem(existing.memoryItemId, {
           title: newFact.title,
           content: decision.content,
           tags: Array.from(new Set([...newFact.tags, ...existing.tags])),
-          importance: Math.max(newFact.importance, existing.importance)
+          importance: Math.max(newFact.importance, existing.importance),
+          type: "fact" // Force type to fact on merge
         });
       }
       return null;
 
     case "REPLACE":
-      // Mise à jour de l'item existant avec les nouvelles informations
       return await updateMemoryItem(existing.memoryItemId, {
         title: newFact.title,
         content: newFact.content,
         tags: newFact.tags,
-        importance: newFact.importance
+        importance: newFact.importance,
+        type: "fact" // Force type to fact on replace
       });
 
     case "NEW":
     default:
+      console.log(`[Memory] Creating new distinct item: "${newFact.title}" (type: fact)`);
       return await createMemoryItem({ ...newFact, type: "fact" });
   }
 }

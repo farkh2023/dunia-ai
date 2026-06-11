@@ -36,7 +36,8 @@ export const memoryCreateSchema = z.object({
   content: z.string().min(1).max(100000),
   source: z.string().max(300).optional(),
   tags: z.array(z.string().min(1).max(40)).default([]),
-  importance: z.number().int().min(1).max(5).default(3)
+  importance: z.number().int().min(1).max(5).default(3),
+  type: z.string().max(40).optional()
 });
 
 export const documentSearchSchema = z.object({

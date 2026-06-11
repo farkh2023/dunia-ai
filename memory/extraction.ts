@@ -47,10 +47,13 @@ export async function extractAndStoreMemories(input: {
 
   // Fallback déterministe local si l'IA échoue ou ne renvoie rien
   if (facts.length === 0) {
+    console.log(`[Memory] LLM extracted 0 facts, trying local fallback for: "${input.userContent.slice(0, 50)}..."`);
     facts = localFactExtraction(input.userContent);
+    console.log(`[Memory] Local fallback extracted ${facts.length} facts`);
   }
   
   for (const fact of facts) {
+    console.log(`[Memory] Consolidating fact: ${fact.title} (type: fact)`);
     await consolidateFact({
       ...fact,
       source: `conversation:${input.conversationId}`
